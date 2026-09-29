@@ -201,6 +201,9 @@ setChatHistory((prev) => [
 };
 
   return (
+
+// Image analysis
+
     <main className="min-h-screen bg-white px-12 py-6">
       <div className="mx-auto max-w-5xl">
         <div className="mb-6 border-b pb-4">
