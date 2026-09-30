@@ -202,8 +202,8 @@ setChatHistory((prev) => [
 
   return (
 
-// Image analysis
-
+        // IMAGE ANALYSIS
+        
     <main className="min-h-screen bg-white px-12 py-6">
       <div className="mx-auto max-w-5xl">
         <div className="mb-6 border-b pb-4">
@@ -442,30 +442,40 @@ setChatHistory((prev) => [
         className="w-[120px]"
         disabled={!selectedImage || analysisLoading}
       >
-        {analysisLoading ? "Working..." : "Generate"}
+        {analysisLoading ? "Generate" : "Generate"}
       </Button>
     </div>
 
-    {analysis && (
-      <div className="mt-4">
+ <div className="mt-4">
+        <div className="mt-2">
         <h3 className="mb-3 flex items-center gap-2 text-lg font-semibold">
           <FileText className="h-5 w-5" strokeWidth={1.8} />
           Here is the summary
         </h3>
 
-        <div className="space-y-2 rounded-lg border border-gray-200 bg-white p-4 text-sm leading-7 text-gray-700">
-          {analysis.split("\n").map((line, index) => {
-            const cleanLine = line
-              .replace(/^#{1,6}\s*/, "")
-              .replace(/\*\*/g, "");
+        {!analysis && (
+          <p className="text-sm text-gray-400">
+            First, enter your image to recognize an ingredients.
+        </p>
+        )}
 
-            if (!cleanLine.trim()) return null;
+        {analysis && (
+          <div className="space-y-2 rounded-lg border border-gray-200 bg-white p-4 text-sm leading-7 text-gray-700">
+            {analysis.split("\n").map((line, index) => {
+              const cleanLine = line
+                .replace(/^#{1,6}\s*/, "")
+                .replace(/\*\*/g, "");
 
-            return <p key={index}>{cleanLine}</p>;
-          })}
-        </div>
+              if (!cleanLine.trim()) return null;
+
+              return <p key={index}>{cleanLine}</p>;
+            })}
+          </div>
+        )}
       </div>
-    )}
+    </div>
+  
+  
   </CardContent>
 </Card>
 )}
@@ -563,4 +573,5 @@ setChatHistory((prev) => [
     </main>
   );
 }
+
 
