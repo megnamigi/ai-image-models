@@ -17,15 +17,24 @@ export async function POST(request: Request) {
     }
 
     const response = await ai.models.generateContent({
-      model: "gemini-3.6-flash",
+      model: "gemini-3.5-flash-lite",
       contents: `
 Identify the ingredients in the following food description.
 
 Food:
 ${description}
 
-Return only a simple list of ingredients.
-Do not include explanations.
+Return the result in exactly this format:
+
+Here's a quick summary of the ingredients you used:
+
+• ingredient 1
+• ingredient 2
+• ingredient 3
+
+Simple, classic, and delicious!
+
+Do not add markdown symbols such as ** or #.
 `,
     });
 

@@ -212,7 +212,7 @@ setChatHistory((prev) => [
           </h1>
         </div>
 
-    <div className="mx-auto mb-8 flex w-full max-w-[450px] rounded-lg bg-gray-100 p-1">
+    <div className="ml-[150px] mb-8 flex w-full max-w-[450px] rounded-lg bg-gray-100 p-1">
   <button
     onClick={() => setActiveTab("analysis")}
     className={`rounded-md px-4 py-1.5 text-sm font-medium ${
@@ -306,47 +306,98 @@ setChatHistory((prev) => [
 
 {activeTab === "ingredients" && (
 
-    <Card className="mx-auto mt-8 max-w-2xl border-0 shadow-none">
-      <CardHeader>
-        <CardTitle>Ingredient Recognition</CardTitle>
+    <div className="ml-[150px] mt-8 w-[580px]">
+      <CardHeader className="px-0 pb-3">
+        <CardTitle className="flex items-center justify-between text-xl font-semibold">
+          <div className="flex items-center gap-2">
+            <Sparkles className="h-5 w-5" strokeWidth={1.8} />
+            <span>Ingredient recognition</span>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => {
+            setFoodDescription("");
+            setIngredients("");
+          }}
+            className="flex h-8 w-8 items-center justify-center rounded-md border border-gray-200 bg-white hover:bg-gray-50"
+          >
+            <RotateCcw
+              className="h-4 w-4 text-gray-400"
+              strokeWidth={1.5}
+            />
+          </button>
+        </CardTitle>
       </CardHeader>
 
   <CardContent className="space-y-4">
     <div className="space-y-2">
-      <Label htmlFor="foodDescription">
-        Describe your food
-      </Label>
+      <p className="text-sm font-normal text-gray-400">
+        Describe the food, and AI will detect the ingredients.
+      </p>
 
       <Textarea
         id="foodDescription"
-        placeholder="Example: Pasta carbonara with creamy sauce and bacon..."
+        placeholder="Орц тодорхойлох"
         value={foodDescription}
         onChange={(e) => setFoodDescription(e.target.value)}
         className="min-h-[120px]"
       />
     </div>
 
-    <Button
-      onClick={handleIngredients}
-      className="w-full"
-      disabled={!foodDescription.trim() || ingredientsLoading}
-    >
-      {ingredientsLoading ? "Identifying..." : "Identify Ingredients"}
-    </Button>
+    <div className="flex justify-end">
+      <button
+        type="button"
+        onClick={handleIngredients}
+        disabled={!foodDescription.trim() || ingredientsLoading}
+        className={`h-9 w-[90px] rounded-md text-sm text-white transition-colors ${
+          foodDescription.trim() && !ingredientsLoading
+          ? "cursor-pointer bg-black"
+          : "cursor-not-allowed bg-gray-400"
+        }`}
+      >
+        {ingredientsLoading ? "Working..." : "Generate"}
+      </button>
+    </div>
 
-    {ingredients && (
-      <div className="rounded-xl border bg-gray-50 p-5">
-        <h3 className="mb-3 font-semibold">
-          Identified Ingredients
-        </h3>
+    <div className="mt-8">
+      <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold">
+        <FileText className="h-5 w-5" strokeWidth={1.8} />
+        Identified Ingredients
+      </h3>
 
-        <p className="whitespace-pre-line text-sm text-gray-700">
-          {ingredients}
-        </p>
+      {ingredients ? (
+    <div className="rounded-md border border-gray-200 bg-white p-4">
+      <div className="text-sm leading-6 text-gray-700">
+        {ingredients.split("\n").map((line, index) => {
+          const trimmedLine = line.trim();
+
+          if (trimmedLine.startsWith("•")) {
+            return (
+              <p key={index} className="font-semibold">
+                {line}
+              </p>
+            );
+          }
+
+          return (
+            <p key={index} className={trimmedLine === "" ? "h-3" : ""}>
+              {line}
+            </p>
+          );
+        })}
       </div>
-    )}
-  </CardContent>
-</Card>
+      
+    </div>
+  ) : (
+    <p className="text-sm text-gray-400">
+      First, enter your text to recognize an ingredients.
+    </p>
+  )}
+</div>
+
+    </CardContent>
+  </div>
 )}
 
 {activeTab === "analysis" && (
@@ -365,16 +416,22 @@ setChatHistory((prev) => [
               setImagePreview("");
               setAnalysis("");
             }}
-            className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-gray-100"
+
+            className="flex h-8 w-8 items-center justify-center rounded-md border border-gray-200 bg-white hover:bg-gray-50"  
           >
-            <RotateCcw className="h-4 w-4 text-black" strokeWidth={1.5} />
+            <RotateCcw
+              className="h-4 w-4 text-gray-400"
+              strokeWidth={1.5}
+            />
           </button>
         </CardTitle>
     </CardHeader>
 
   <CardContent className="space-y-4 px-0">
     <div className="space-y-3">
-  <Label>Upload a food photo, and AI will detect the ingredients.</Label>
+      <p className="text-sm font-normal text-gray-400">
+        Upload a food photo, and AI will detect the ingredients.
+      </p>
 
   <label
     htmlFor="foodImage"
