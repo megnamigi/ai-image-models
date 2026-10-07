@@ -8,15 +8,23 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
+
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { Sparkles, RotateCcw, Trash2, FileText} from "lucide-react";
+
+import {
+  Sparkles,
+  RotateCcw,
+  Trash2,
+  FileText,
+  FileImage,
+  MessageCircle,
+  Send,
+} from "lucide-react";
 
 export default function Home() {
   const [chatOpen, setChatOpen] = useState(false);
   const [chatMessage, setChatMessage] = useState("");
-  const [chatResponse, setChatResponse] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
   const [sentMessage, setSentMessage] = useState("");
   const [chatHistory, setChatHistory] = useState<
@@ -163,7 +171,6 @@ setChatHistory((prev) => [
 
   try {
     setChatLoading(true);
-    setChatResponse("");
 
     const response = await fetch("/api/chat", {
       method: "POST",
@@ -181,8 +188,6 @@ setChatHistory((prev) => [
     if (!response.ok) {
       throw new Error(data.error || "Chat failed");
     }
-
-    setChatResponse(data.reply);
 
     setChatHistory((prev) => [
       ...prev,
@@ -249,59 +254,103 @@ setChatHistory((prev) => [
 
 {activeTab === "creator" && (
 
-  <Card className="mr-auto ml-[110px] w-full max-w-[580px] bg-transparent shadow-none !ring-0">
-          <CardHeader>
-            <CardTitle>Generate an image</CardTitle>
-          </CardHeader>
+  <Card className="mr-auto ml-[150px] w-full max-w-[580px] bg-transparent shadow-none !ring-0">
+    <CardHeader className="px-0 pb-3">
+      <CardTitle className="flex items-center justify-between text-xl font-semibold">
+        <span className="flex items-center gap-2">
+          <Sparkles className="h-5 w-5" strokeWidth={1.8} />
+            Food image creator
+        </span>
 
-          <CardContent className="space-y-4 px-0">
-            <div className="space-y-2">
-              <Label htmlFor="prompt">
-                Describe your image
-              </Label>
+        <button
+          type="button"
+          onClick={() => {
+            setPrompt("");
+            setImage("");
+          }}
+          className="flex h-8 w-8 items-center justify-center rounded-md border border-gray-200 bg-white"
+        >
+          <RotateCcw className="h-4 w-4 text-black" strokeWidth={1.5} />
+        </button>
+      </CardTitle>
+    </CardHeader>
 
-              <Textarea
-                id="prompt"
-                placeholder="Example: A delicious pasta carbonara..."
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-                className="min-h-[140px]"
+    <CardContent className="space-y-4 px-0">
+      <div className="space-y-2">
+        <p className="text-sm font-normal text-gray-400">
+          What food image do you want? Describe it briefly.
+        </p>
+
+        <Textarea
+          id="prompt"
+          placeholder="Хоолны тайлбар"
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          className="min-h-[120px] bg-white"
+        />
+      </div>
+
+      <div className="flex justify-end">
+        <Button
+          onClick={handleGenerate}
+          disabled={!prompt.trim() || loading}
+          className={`w-[90px] text-white ${
+            prompt.trim() && !loading
+              ? "bg-black hover:bg-black/90"
+              : "bg-gray-400"
+          }`}
+        >
+          {loading ? "Working..." : "Generate"}
+        </Button>
+      </div>
+
+      {error && (
+        <p className="text-center text-sm text-red-500">
+          {error}
+        </p>
+      )}
+
+      <div className="space-y-3">
+        <h3 className="flex items-center gap-2 text-lg font-semibold">
+          <FileImage className="h-5 w-5" strokeWidth={1.8} />
+          Result
+        </h3>
+
+        {loading ? (
+          <div className="space-y-4">
+            <p className="text-sm text-gray-400">
+              Working on your image just wait for moment
+            </p>
+
+            <div className="flex justify-center">
+              <RotateCcw
+                className="h-5 w-5 animate-spin text-black"
+                strokeWidth={1.5}
               />
             </div>
+          </div>
 
-            <Button
-              onClick={handleGenerate}
-              className="w-full"
-              disabled={!prompt.trim() || loading}
-            >
-              {loading ? "Generating..." : "Generate Image"}
-            </Button>
-
-            {error && (
-              <p className="text-center text-sm text-red-500">
-                {error}
+          ) : image ? (
+            <div className="rounded-md border border-gray-200 p-3">
+              <p className="mb-2 text-sm font-medium text-black">
+                Pasta carbonara
               </p>
-            )}
 
-            <div className="flex min-h-[300px] items-center justify-center overflow-hidden rounded-xl border border-dashed bg-gray-50">
-              {loading ? (
-                <p className="text-sm text-gray-400">
-                  AI is creating your image...
-                </p>
-              ) : image ? (
-                <img
-                  src={image}
-                  alt="AI generated image"
-                  className="h-auto w-full rounded-xl object-cover"
-                />
-              ) : (
-                <p className="text-sm text-gray-400">
-                  Your generated image will appear here
-                </p>
-              )}
+              <img
+                src={image}
+                alt="AI generated food"
+                className="h-[300px] w-[300px] rounded-md object-cover"
+              />
             </div>
-          </CardContent>
-    </Card>
+       
+        ) : (
+          <p className="text-sm text-gray-400">
+            First, enter your text to generate an image.
+          </p>
+        )}
+      </div>
+    </CardContent>
+  </Card>
   )}
 
 {activeTab === "ingredients" && (
@@ -541,22 +590,22 @@ setChatHistory((prev) => [
       {/* Chat Assistant */}
 
 {chatOpen && (
-  <div className="fixed bottom-24 right-6 z-50 flex w-[360px] max-w-[calc(100vw-48px)] flex-col overflow-hidden rounded-2xl border bg-white shadow-2xl">
-    <div className="flex items-center justify-between border-b p-4">
-      <h2 className="font-semibold">Chat assistant</h2>
+  <div className="fixed bottom-24 right-6 z-50 flex w-[280px] max-w-[calc(100vw-48px)] flex-col overflow-hidden rounded-2xl border bg-white shadow-2xl">
+    <div className="flex items-center justify-between border-b px-3 py-2">
+      <h2 className="text-sm font-semibold">Chat assistant</h2>
 
       <button
         type="button"
         onClick={() => setChatOpen(false)}
-        className="text-xl text-gray-500 hover:text-black"
+        className="flex h-7 w-7 items-center justify-center rounded-md border text-base text-gray-500 hover:text-black"
       >
         ×
       </button>
     </div>
 
     <div className="h-[320px] overflow-y-auto p-4">
-      <div className="rounded-xl bg-gray-100 p-3 text-sm">
-        Hi! How can I help you with food today?
+      <div className="w-fit max-w-[210px] rounded-lg bg-[#333333] px-3 py-2 text-sm text-white">
+        How can I help you today?
       </div>
 
      {chatHistory.map((message, index) => (
@@ -566,13 +615,13 @@ setChatHistory((prev) => [
             message.role === "user" ? "justify-end" : "justify-start"
           }`}
         >
-          <div
-            className={`max-w-[80%] whitespace-pre-line rounded-xl px-4 py-3 text-sm ${
-              message.role === "user"
-                ? "bg-black text-white"
-                : "bg-gray-100 text-black"
-            }`}
-          >
+         <div
+          className={`whitespace-pre-line rounded-xl px-3 py-2 text-sm ${
+            message.role === "user"
+              ? "w-fit max-w-[230px] bg-gray-100 text-black text-center"
+              : "w-fit max-w-[210px] bg-[#333333] text-white"
+          }`}
+        >
             {message.text
               .replace(/#{1,6}\s?/g, "")
               .replace(/\*\*/g, "")
@@ -581,12 +630,6 @@ setChatHistory((prev) => [
         </div>
       ))} 
 
-      {chatLoading && (
-        <div className="mt-3 rounded-xl bg-gray-100 p-3 text-sm text-gray-500">
-          Thinking...
-        </div>
-      )}
-
     <div ref={chatEndRef} />
 
     </div>
@@ -594,7 +637,7 @@ setChatHistory((prev) => [
     <div className="flex gap-2 border-t p-4">
      <input
        type="text"
-       placeholder="Ask something..."
+       placeholder="Type your message..."
        value={chatMessage}
        onChange={(e) => setChatMessage(e.target.value)}
        onKeyDown={(e) => {
@@ -605,30 +648,39 @@ setChatHistory((prev) => [
        className="flex-1 rounded-lg border px-3 py-2 outline-none"
     />
 
-    <button
-      type="button"
-      onClick={handleChat}
-      disabled={!chatMessage.trim() || chatLoading}
-      className="rounded-lg bg-black px-4 py-2 text-white disabled:opacity-50"
-    >
-      {chatLoading ? "..." : "↑"}
-    </button>
+   <button
+  type="button"
+  onClick={handleChat}
+  disabled={!chatMessage.trim() || chatLoading}
+  className="flex h-12 w-12 items-center justify-center rounded-full bg-black text-white disabled:opacity-50"
+>
+  {chatLoading ? (
+    "..."
+  ) : (
+    <Send
+      className="h-5 w-5"
+      strokeWidth={1.5}
+    />
+  )}
+</button>
 
     </div>
   </div>
 )}
 
-      {/* Chat Assistant Button */}
+    {/* Chat Assistant Button */}
 <button
   type="button"
   onClick={() => setChatOpen(true)}
-  className="fixed bottom-6 right-6 flex h-14 w-14 items-center justify-center rounded-full bg-black text-2xl text-white shadow-lg hover:bg-gray-800"
+  className="fixed bottom-6 right-6 flex h-12 w-12 items-center justify-center rounded-full bg-black text-white shadow-lg hover:bg-gray-800"
 >
-  💬
-</button>
+  <MessageCircle
+    className="h-5 w-5"
+    strokeWidth={1.5}
+  />
+</button>  
 
-    </main>
-  );
+
+</main>
+);
 }
-
-
