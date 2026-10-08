@@ -472,7 +472,7 @@ setChatHistory((prev) => [
 )}
 
 {activeTab === "analysis" && (
-    <Card className="mx-auto w-full max-w-[580px] bg-transparent shadow-none !ring-0">
+    <Card className="ml-[150px] mt-8 w-[580px] max-w-full bg-transparent shadow-none !ring-0">
       <CardHeader className="px-0 pb-3">
         <CardTitle className="flex items-center justify-between text-xl font-semibold">
           <div className="flex items-center gap-2">
