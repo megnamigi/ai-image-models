@@ -41,6 +41,8 @@ export default function Home() {
 
   const [prompt, setPrompt] = useState("");
   const [image, setImage] = useState("");
+  const [imageTitle, setImageTitle] = useState("");
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   
@@ -82,6 +84,19 @@ export default function Home() {
       }
 
       setImage(data.image);
+
+      const foodName = prompt.trim().match(
+        /(?:plate of|image of|photo of|delicious|a plate of)\s+(.+?)(?:\s+with|\s+using|\s+on a|\s+made|\s+and|[,.]|$)/i
+      );
+
+      const title = foodName
+        ? foodName[1].trim()
+        : prompt.trim().split(/[,.]/)[0].slice(0, 50);
+
+      setImageTitle(
+        title.charAt(0).toUpperCase() + title.slice(1)
+      );
+
     } catch (error) {
       console.error(error);
       setError("Something went wrong. Please try again.");
@@ -199,7 +214,14 @@ setChatHistory((prev) => [
 
   } catch (error) {
     console.error(error);
-    setChatResponse("Sorry, something went wrong.");
+    setChatHistory((prev) => [
+  ...prev,
+  {
+    role: "assistant",
+    text: "Sorry, something went wrong.",
+  },
+]);
+
   } finally {
     setChatLoading(false);
   }
@@ -333,7 +355,7 @@ setChatHistory((prev) => [
           ) : image ? (
             <div className="rounded-md border border-gray-200 p-3">
               <p className="mb-2 text-sm font-medium text-black">
-                Pasta carbonara
+                {imageTitle}
               </p>
 
               <img
@@ -390,7 +412,7 @@ setChatHistory((prev) => [
         placeholder="Орц тодорхойлох"
         value={foodDescription}
         onChange={(e) => setFoodDescription(e.target.value)}
-        className="min-h-[120px]"
+        className="min-h-[120px] bg-white"
       />
     </div>
 
